@@ -42,7 +42,7 @@ class _SearchPageState extends State<SearchPage> {
       } else {
       }
     } catch (e) {
-      print('Error: $e');
+      print('Hata: $e');
     }
   }
 
@@ -77,7 +77,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           SizedBox(
-            height: 50, // İstenilen boyuta göre ayarlayabilirsiniz
+            height: 50,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: filteredMovies.length,

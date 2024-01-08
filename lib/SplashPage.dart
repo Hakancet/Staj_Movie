@@ -47,7 +47,7 @@ class _SplashPageState extends State<SplashPage> {
                   ),
                   child: AnimatedTextKit(
                     animatedTexts: [
-                      TypewriterAnimatedText('Sajyer Uygulaması'),
+                      TypewriterAnimatedText('Stajyer Uygulaması'),
                       TypewriterAnimatedText('Flutter İle Yapıldı'),
                       TypewriterAnimatedText(
                           'NEOFİLM SUNAR'),

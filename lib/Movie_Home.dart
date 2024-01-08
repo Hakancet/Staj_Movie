@@ -175,7 +175,6 @@ class _MovieHomeState extends State<MovieHome> {
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
                               onTap: () {
-                                // Tıklanan film detay sayfasına yönlendirilir
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -185,14 +184,12 @@ class _MovieHomeState extends State<MovieHome> {
                               },
                               child: Stack(
                                 children: [
-                                  // Resim
                                   Image.network(
                                     movies[index].poster ?? '',
                                     width: 200,
                                     height: 270,
                                     fit: BoxFit.cover,
                                   ),
-                                  // Metinler
                                   Container(
                                     width: 200,
                                     height: 310,
@@ -259,48 +256,56 @@ class _MovieHomeState extends State<MovieHome> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Stack(
-                              children: [
-                                // Resim
-                                Image.network(
-                                  movies[index].poster ?? '',
-                                  width: 200,
-                                  height: 270,
-                                  fit: BoxFit.cover,
-                                ),
-                                // Metinler
-                                Container(
-                                  width: 200,
-                                  height: 310,
-                                  color: Colors.black26,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(Icons.star, color: Colors.white, size: 16),
-                                          Icon(Icons.star, color: Colors.white, size: 16),
-                                          Icon(Icons.star, color: Colors.white, size: 16),
-                                          Icon(Icons.star, color: Colors.white, size: 16),
-                                          Icon(Icons.star, color: Colors.white, size: 16),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            movies[index].averageRating?.toStringAsFixed(1) ?? '',
-                                            style: TextStyle(color: Colors.white, fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        movies[index].title ?? '',
-                                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MovieDetail(Movie: movies[index]),
                                   ),
-                                ),
-                              ],
+                                );
+                              },
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    movies[index].poster ?? '',
+                                    width: 200,
+                                    height: 270,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Container(
+                                    width: 200,
+                                    height: 310,
+                                    color: Colors.black26,
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.star, color: Colors.white, size: 16),
+                                            Icon(Icons.star, color: Colors.white, size: 16),
+                                            Icon(Icons.star, color: Colors.white, size: 16),
+                                            Icon(Icons.star, color: Colors.white, size: 16),
+                                            Icon(Icons.star, color: Colors.white, size: 16),
+                                            SizedBox(width: 4),
+                                            Text(
+                                              movies[index].averageRating?.toStringAsFixed(1) ?? '',
+                                              style: TextStyle(color: Colors.white, fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          movies[index].title ?? '',
+                                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
