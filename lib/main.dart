@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:staj_movie/Movie_Home.dart';
 import 'package:staj_movie/SplashPage.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:SplashPage(),
+      home:const MovieHome(),
     );
   }
 }

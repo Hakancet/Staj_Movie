@@ -3,27 +3,17 @@ class CategoryName {
   String? title;
   int? year;
   String? poster;
-  int? duration;
-  String? releaseDate;
-  double? averageRating;
+  int? averageRating;
 
   CategoryName(
-      {this.sId,
-        this.title,
-        this.year,
-        this.poster,
-        this.duration,
-        this.releaseDate,
-        this.averageRating});
+      {this.sId, this.title, this.year, this.poster, this.averageRating});
 
   CategoryName.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     title = json['title'];
     year = json['year'];
     poster = json['poster'];
-    duration = json['duration'];
-    releaseDate = json['releaseDate'];
-    averageRating = json['averageRating']?.toDouble();
+    averageRating = json['averageRating'];
   }
 
   Map<String, dynamic> toJson() {
@@ -32,8 +22,6 @@ class CategoryName {
     data['title'] = this.title;
     data['year'] = this.year;
     data['poster'] = this.poster;
-    data['duration'] = this.duration;
-    data['releaseDate'] = this.releaseDate;
     data['averageRating'] = this.averageRating;
     return data;
   }

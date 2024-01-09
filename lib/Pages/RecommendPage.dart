@@ -1,40 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:staj_movie/Models/Category_Articles.dart';
-import 'package:staj_movie/Models/Movie_Articles.dart';
 import 'package:staj_movie/Models/Movie_Detail_articles.dart';
+import 'package:staj_movie/Models/Recommended_Articles.dart';
 import 'package:staj_movie/Pages/CategoryMovies.dart';
-import 'package:staj_movie/Services/CategoryName_Services.dart';
 import 'package:staj_movie/Services/Category_Services.dart';
 import 'package:staj_movie/Services/Movie_Detail_Services.dart';
 
-class MovieDetail extends StatefulWidget {
-  final CategoryName Movie;
+class RecommendPage extends StatefulWidget {
+  final RecommendedMovies recommendedMovies;
 
-  const MovieDetail({Key? key, required this.Movie}) : super(key: key);
+  const RecommendPage({Key? key, required this.recommendedMovies}) : super(key: key);
 
   @override
-  State<MovieDetail> createState() => _MovieDetailState();
+  State<RecommendPage> createState() => _RecommendPageState();
 }
 
-class _MovieDetailState extends State<MovieDetail> {
+class _RecommendPageState extends State<RecommendPage> {
   late List<Category> category = [];
-  late List<AllMovieDetail>? movieDetails;
-  late List<CategoryName> categoryName  = [];
-  late List<CategoryName> movies = [];
-  late List<Category> movieCategories = [];
+  late List<Category> movieCategories = []; // Film kategorileri
+  late List<AllMovieDetail>? movieDetails; // Filmin detayları
 
   @override
   void initState() {
     super.initState();
     if (mounted) {
-      fetchCategory();
+      fetchCategory(); // Kategorileri çek
       movieDetails = [];
-      fetchMovieDetails();
+      fetchMovieDetails(); // Film detaylarını çek
     }
   }
+
   Future<void> fetchMovieDetails() async {
     try {
-      String movieId = widget.Movie.sId ?? '';
+      String movieId = widget.recommendedMovies.sId ?? '';
       AllMovieDetail? fetchedMovieDetail = await MovieDetailApi.getMovieDetail(movieId);
 
       setState(() {
@@ -44,26 +42,18 @@ class _MovieDetailState extends State<MovieDetail> {
       print('Hata: $e');
     }
   }
-  Future<void> fetchMoviesByCategory(String categoryId) async {
-    try {
-      List<CategoryName>? fetchedMovies = await CategoryNameApi.getMoviesByCategoryName(categoryId);
-      setState(() {
-        movies = fetchedMovies ?? [];
-      });
-    } catch (e) {
-      print('Hata: $e');
-    }
-  }
+
   Future<void> fetchCategory() async {
     try {
-      List<Category>? fetchedCategory = await CategoryApi.getCategoryList(); // Örnek olarak, getCategoryList metodu kullanıldıysa
+      List<Category>? fetchedCategory = await CategoryApi.getCategoryList();
       setState(() {
-        category = fetchedCategory ?? []; // Çekilen kategorileri listeye ekle (null kontrolü yapılıyor)
+        category = fetchedCategory ?? [];
       });
     } catch (e) {
       print('Hata: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,7 +93,6 @@ class _MovieDetailState extends State<MovieDetail> {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: GestureDetector(
                           onTap: () {
-                            // Tıklandığında kategori adını al ve CategoryMovies sayfasına yönlendir
                             Navigator.push(
                               context,
                               MaterialPageRoute(

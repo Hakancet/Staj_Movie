@@ -13,12 +13,12 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
+    super.initState();
     Future.delayed(const Duration(seconds: 7), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => MovieHome()),
       );
     });
-    super.initState();
   }
 
   @override
@@ -49,10 +49,7 @@ class _SplashPageState extends State<SplashPage> {
                     animatedTexts: [
                       TypewriterAnimatedText('Stajyer Uygulaması'),
                       TypewriterAnimatedText('Flutter İle Yapıldı'),
-                      TypewriterAnimatedText(
-                          'NEOFİLM SUNAR'),
-                      TypewriterAnimatedText(
-                          'Staja Seçildim Mi?'),
+                      TypewriterAnimatedText('NEOFİLM SUNAR'),
                     ],
                     onTap: () {
                       Navigator.of(context).pushReplacement(

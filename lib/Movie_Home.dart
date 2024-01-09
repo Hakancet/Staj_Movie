@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:staj_movie/Models/Category_Articles.dart';
 import 'package:staj_movie/Models/Movie_Articles.dart';
+import 'package:staj_movie/Models/Movie_Detail_articles.dart';
+import 'package:staj_movie/Models/Recommended_Articles.dart';
+import 'package:staj_movie/Pages/CategoryMovies.dart';
 import 'package:staj_movie/Pages/DetailPage.dart';
+import 'package:staj_movie/Pages/RecommendPage.dart';
 import 'package:staj_movie/Pages/SearchPage.dart';
 import 'package:staj_movie/Services/Api_Services.dart';
+import 'package:staj_movie/Services/CategoryName_Services.dart';
+import 'package:staj_movie/Services/Category_Services.dart';
+import 'package:staj_movie/Services/Movie_Detail_Services.dart';
+import 'package:staj_movie/Services/Recommender_Service.dart';
 
 class MovieHome extends StatefulWidget {
   const MovieHome({Key? key}) : super(key: key);
@@ -12,19 +21,44 @@ class MovieHome extends StatefulWidget {
 }
 
 class _MovieHomeState extends State<MovieHome> {
-  late List<movie> movies = []; // Film listesi
+  late List<CategoryName> movies = [];
+  late List<RecommendedMovies> recommended = [];
+  late List<AllMovieDetail> detail = [];
+  late List<MovieDetail> moviedetail = [];
+  late List<Category> category = [];
+  late List<CategoryName> categoryName  = [];
 
-  MovieApi movieApi = MovieApi(); // Api sınıfından bir örnek
+  MovieApi movieApi = MovieApi();
+  RecommenderApi recommenderApi = RecommenderApi();
+  MovieDetailApi movieDetailApi = MovieDetailApi();
 
   @override
   void initState() {
     super.initState();
-    fetchMovies(); // Filmleri çekmek için API'yi çağırır
+    if (mounted) {
+      fetchMovies();
+      fetchRecommender();
+      fetchCategory(); // Kategorileri çek
+    }
   }
+
+  // fetchCategory metodu API'den kategorileri çekmek için kullanılabilir
+  Future<void> fetchCategory() async {
+    try {
+      List<Category>? fetchedCategory = await CategoryApi.getCategoryList();
+      setState(() {
+        category = fetchedCategory ?? []; // Çekilen kategorileri listeye ekle
+      });
+    } catch (e) {
+      print('Hata: $e');
+    }
+  }
+
+
 
   Future<void> fetchMovies() async {
     try {
-      List<movie>? fetchedMovies = await MovieApi.getMovieList(); // API'den filmleri çek
+      List<CategoryName>? fetchedMovies = await MovieApi.getMovieList();
       setState(() {
         movies = fetchedMovies!; // Çekilen filmleri listeye ekle
       });
@@ -32,6 +66,46 @@ class _MovieHomeState extends State<MovieHome> {
       print('Hata: $e');
     }
   }
+
+  Future<void> fetchMovieDetail(String movieId) async {
+    try {
+      AllMovieDetail? fetchedMovieDetail = await MovieDetailApi.getMovieDetail(movieId);
+      setState(() {
+        detail = fetchedMovieDetail != null ? [fetchedMovieDetail] : [];
+      });
+    } catch (e) {
+      print('Hata: $e');
+    }
+  }
+
+
+  Future<void> fetchRecommender() async {
+    try {
+      List<RecommendedMovies>? fetchedRecommended = await RecommenderApi.getRecommendedList();
+      setState(() {
+        recommended = fetchedRecommended!.cast<RecommendedMovies>(); // Çekilen filmleri listeye ekle
+      });
+    } catch (e) {
+      print('Hata: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> fetchMoviesByCategory(String categoryId) async {
+    try {
+      List<CategoryName>? fetchedMovies = await CategoryNameApi.getMoviesByCategoryName(categoryId);
+      setState(() {
+        movies = fetchedMovies ?? [];
+      });
+    } catch (e) {
+      print('Hata: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +123,7 @@ class _MovieHomeState extends State<MovieHome> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
               },
               icon: const Icon(
                 Icons.search,
@@ -66,78 +140,35 @@ class _MovieHomeState extends State<MovieHome> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shadowColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                    // category isimleri geldiği alan
+                    SizedBox(
+                      height: 50,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: category.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Tıklandığında kategori adını al ve CategoryMovies sayfasına yönlendir
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CategoryMovies(categoryName: category[index].name ?? ''),
+                                  ),
+                                );
+                              },
+                              child: Chip(
+                                label: Text(category[index].name ?? '', style: const TextStyle(color: Colors.white)),
+                                backgroundColor: Colors.grey[900],
                               ),
-                              backgroundColor: Colors.black,
                             ),
-                            onPressed: () {},
-                            child: const Text(
-                              'Action',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shadowColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              backgroundColor: Colors.black,
-                            ),
-                            onPressed: () {},
-                            child: const Text(
-                              'Commedy',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shadowColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              backgroundColor: Colors.black,
-                            ),
-                            onPressed: () {},
-                            child: const Text(
-                              'Horror',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shadowColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              backgroundColor: Colors.black,
-                            ),
-                            onPressed: () {},
-                            child: const Text(
-                              'Adventura',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
+
                     const Divider(
                       height: 35,
                       color: Colors.white,
@@ -169,8 +200,11 @@ class _MovieHomeState extends State<MovieHome> {
                       height: 320,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: movies.length,
+                        itemCount: recommended.length + 1,
                         itemBuilder: (context, index) {
+                          if (index >= recommended.length) {
+                            return SizedBox();
+                          }
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
@@ -178,18 +212,20 @@ class _MovieHomeState extends State<MovieHome> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MovieDetail(Movie: movies[index]),
+                                    builder: (context) => RecommendPage(recommendedMovies: recommended[index]),
                                   ),
                                 );
                               },
                               child: Stack(
                                 children: [
-                                  Image.network(
-                                    movies[index].poster ?? '',
+                                  recommended[index].poster != null && recommended[index].poster!.isNotEmpty
+                                      ? Image.network(
+                                    recommended[index].poster!,
                                     width: 200,
                                     height: 270,
                                     fit: BoxFit.cover,
-                                  ),
+                                  )
+                                      : Placeholder(),
                                   Container(
                                     width: 200,
                                     height: 310,
@@ -201,21 +237,21 @@ class _MovieHomeState extends State<MovieHome> {
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            SizedBox(width: 4),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const SizedBox(width: 4),
                                             Text(
-                                              movies[index].averageRating?.toStringAsFixed(1) ?? '',
-                                              style: TextStyle(color: Colors.white, fontSize: 12),
+                                              recommended[index].averageRating?.toStringAsFixed(1) ?? '',
+                                              style: const TextStyle(color: Colors.white, fontSize: 12),
                                             ),
                                           ],
                                         ),
                                         Text(
-                                          movies[index].title ?? '',
-                                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                          recommended[index].title ?? '',
+                                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ],
@@ -284,21 +320,21 @@ class _MovieHomeState extends State<MovieHome> {
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            Icon(Icons.star, color: Colors.white, size: 16),
-                                            SizedBox(width: 4),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const Icon(Icons.star, color: Colors.white, size: 16),
+                                            const SizedBox(width: 4),
                                             Text(
                                               movies[index].averageRating?.toStringAsFixed(1) ?? '',
-                                              style: TextStyle(color: Colors.white, fontSize: 12),
+                                              style: const TextStyle(color: Colors.white, fontSize: 12),
                                             ),
                                           ],
                                         ),
                                         Text(
                                           movies[index].title ?? '',
-                                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ],

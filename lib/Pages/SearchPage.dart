@@ -11,8 +11,8 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late List<movie> allMovies = [];
-  late List<movie> filteredMovies = [];
+  late List<CategoryName> allMovies = [];
+  late List<CategoryName> filteredMovies = [];
   String query = '';
 
   @override
@@ -36,7 +36,7 @@ class _SearchPageState extends State<SearchPage> {
       var fetchedMovies = await MovieApi.getMovieList();
       if (fetchedMovies != null) {
         setState(() {
-          allMovies = List<movie>.from(fetchedMovies);
+          allMovies = List<CategoryName>.from(fetchedMovies);
           filteredMovies = allMovies;
         });
       } else {

@@ -12,18 +12,17 @@ class MovieApi {
     return _singleton;
   }
 
-  static Future<List<movie>?> getMovieList() async{
+  static Future<List<CategoryName>?> getMovieList() async{
     final url = Uri.parse('https://neonet.onrender.com/movie') ;
     final response = await http.get(url);
 
 
     if (response.statusCode == 200) {
       List<dynamic> responseJson = json.decode(response.body);
-      List<movie> movieList = responseJson.map((json) => movie.fromJson(json)).toList();
+      List<CategoryName> movieList = responseJson.map((json) => CategoryName.fromJson(json)).toList();
       return movieList;
     } else {
       throw Exception('Bilgiler Yüklenmedi');
     }
-    return null;
   }
 }
